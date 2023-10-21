@@ -42,10 +42,24 @@ export default async function Home() {
               gap: "4",
             })}
           >
-            <ul>
-              {[].map(() => (
-                <li>
-                  <a href="/">ナビゲーション</a>
+            <ul
+              className={css({
+                display: "flex",
+                gap: "2",
+                flexDirection: "column",
+              })}
+            >
+              {new Array(4).fill(undefined).map((_, i) => (
+                <li key={i}>
+                  <a
+                    className={css({
+                      display: "block",
+                      paddingBlock: "2",
+                    })}
+                    href="/"
+                  >
+                    ナビゲーション{i}
+                  </a>
                 </li>
               ))}
             </ul>
