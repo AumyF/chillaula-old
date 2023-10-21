@@ -14,5 +14,5 @@ export const aside = css({
 });
 
 export const main = css({
-  inlineSize: "4xl",
+  inlineSize: "2xl",
 });
