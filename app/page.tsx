@@ -24,8 +24,8 @@ export default async function Home() {
   }
 
   return (
-    <div className={TripleColumn.container("4")}>
-      <div className={TripleColumn.aside()}>
+    <div className={TripleColumn.container}>
+      <div className={TripleColumn.aside}>
         <header className={css({ marginInlineStart: "auto" })}>
           <h1
             className={css({
@@ -66,7 +66,7 @@ export default async function Home() {
           </nav>
         </header>
       </div>
-      <main className={TripleColumn.main("4xl")}>
+      <main className={TripleColumn.main}>
         <form action={createResu}>
           <label>
             <span>Content</span>
@@ -83,7 +83,7 @@ export default async function Home() {
           ))}
         </ul>
       </main>
-      <footer className={TripleColumn.aside()}>
+      <footer className={TripleColumn.aside}>
         <p>I'm footer.</p>
         <small>&copy; 2023-present, Aumy</small>
       </footer>
