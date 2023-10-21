@@ -1,8 +1,8 @@
-import { css } from "./_styled-system/css";
+import { css } from "@/_styled-system/css";
 import { revalidatePath } from "next/cache";
-import { db } from "./_db/kysely";
-import * as TripleColumn from "./_styles/triple-column";
-import { flex } from "./_styled-system/patterns";
+import { db } from "@/_db/kysely";
+import * as TripleColumn from "@/_styles/triple-column";
+import { flex } from "@/_styled-system/patterns";
 
 export const runtime = "edge";
 
