@@ -1,0 +1,34 @@
+generator kysely {
+  provider = "prisma-kysely"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model Resu {
+  id        Int             @id @default(autoincrement())
+  content   String
+  createdAt DateTime        @default(now())
+  scraps    ScrapsOnResus[]
+}
+
+model ScrapsOnResus {
+  resuId  Int
+  resu    Resu  @relation(fields: [resuId], references: [id])
+  scrapId Int
+  scrap   Scrap @relation(fields: [scrapId], references: [id])
+
+  @@id([scrapId, resuId])
+  @@index([resuId])
+  @@index([scrapId])
+}
+
+model Scrap {
+  id        Int             @id @default(autoincrement())
+  title     String
+  createdAt DateTime
+  resus     ScrapsOnResus[]
+}
