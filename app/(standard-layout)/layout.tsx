@@ -1,5 +1,6 @@
 import { css } from "@/_styled-system/css";
 import * as TripleColumn from "@/_styles/triple-column";
+import Link from "next/link";
 
 export default async function StandardLayout({
   children,
@@ -28,10 +29,22 @@ export default async function StandardLayout({
             <ul
               className={css({
                 display: "flex",
+                paddingBlock: "2",
                 gap: "2",
                 flexDirection: "column",
               })}
             >
+              <li>
+                <Link
+                  href="/scraps"
+                  className={css({
+                    display: "block",
+                    paddingBlock: "2",
+                  })}
+                >
+                  スクラップ
+                </Link>
+              </li>
               {new Array(4).fill(undefined).map((_, i) => (
                 <li key={i}>
                   <a
