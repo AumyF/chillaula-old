@@ -17,7 +17,7 @@ export default async function StandardLayout({
               fontWeight: "bold",
             })}
           >
-            Chillaula
+            <Link href="/">Chillaula</Link>
           </h1>
           <nav
             className={css({
