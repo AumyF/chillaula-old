@@ -1,3 +1,4 @@
+import { css } from "./_styled-system/css";
 import "./globals.css";
 import type { Metadata } from "next";
 
@@ -12,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ja">
+    <html className={css({ bg: "bg", color: "text" })} lang="ja">
       <body>{children}</body>
     </html>
   );

@@ -12,7 +12,21 @@ export default defineConfig({
 
   // Useful for theme customization
   theme: {
-    extend: {},
+    extend: {
+      semanticTokens: {
+        colors: {
+          bg: {
+            value: { base: "{colors.gray.100}", _osDark: "{colors.gray.900}" },
+          },
+          text: {
+            value: { base: "{colors.gray.900}", _osDark: "{colors.gray.100}" },
+          },
+        },
+        fonts: {
+          body: { value: "sans-serif" },
+        },
+      },
+    },
   },
 
   // The output directory for your css system
