@@ -2,6 +2,8 @@ import { db } from "@/_db/kysely";
 import { flex } from "@/_styled-system/patterns";
 import Link from "next/link";
 
+export const runtime = "edge";
+
 const Scrap = ({ id, title }: { id: number; title: string }) => {
   return (
     <li key={id}>

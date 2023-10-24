@@ -29,6 +29,23 @@ model ScrapsOnResus {
 model Scrap {
   id        Int             @id @default(autoincrement())
   title     String
-  createdAt DateTime
+  createdAt DateTime        @default(now())
   resus     ScrapsOnResus[]
+}
+
+model Reference {
+  id        Int      @id @default(autoincrement())
+  title     String
+  createdAt DateTime @default(now())
+  url       String
+}
+
+model Tag {
+  id       Int    @id @default(autoincrement())
+  name     String
+  parentId Int?
+  parent   Tag?   @relation("tag", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Tag      Tag[] @relation("tag")
+
+  @@unique([parentId, name])
 }

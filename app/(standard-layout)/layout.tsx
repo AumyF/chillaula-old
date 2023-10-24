@@ -64,7 +64,7 @@ export default async function StandardLayout({
       </div>
       <main className={TripleColumn.main}>{children}</main>
       <footer className={TripleColumn.aside}>
-        <p>I'm footer.</p>
+        <p>I&apos;m footer.</p>
         <small>&copy; 2023-present, Aumy</small>
       </footer>
     </div>
