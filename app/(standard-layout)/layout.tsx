@@ -1,6 +1,7 @@
-import { css } from "@/_styled-system/css";
 import * as TripleColumn from "@/_styles/triple-column";
-import Link from "next/link";
+import { Header } from "./_components/header";
+import { cx } from "@/_styled-system/css";
+import { flex } from "@/_styled-system/patterns";
 
 export default async function StandardLayout({
   children,
@@ -10,70 +11,19 @@ export default async function StandardLayout({
   return (
     <div className={TripleColumn.container}>
       <div className={TripleColumn.aside}>
-        <header className={css({ marginInlineStart: "auto" })}>
-          <h1
-            className={css({
-              fontSize: "2xl",
-              fontWeight: "bold",
-            })}
-          >
-            <Link href="/">Chillaula</Link>
-          </h1>
-          <nav
-            className={css({
-              display: "flex",
-              flexDirection: "column",
-              gap: "4",
-            })}
-          >
-            <ul
-              className={css({
-                display: "flex",
-                paddingBlock: "2",
-                gap: "2",
-                flexDirection: "column",
-              })}
-            >
-              <li>
-                <Link
-                  href="/threads"
-                  className={css({
-                    display: "block",
-                    paddingBlock: "2",
-                  })}
-                >
-                  スレッド
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/bookmarks"
-                  className={css({
-                    display: "block",
-                    paddingBlock: "2",
-                  })}
-                >
-                  ブックマーク
-                </Link>
-              </li>
-              {new Array(4).fill(undefined).map((_, i) => (
-                <li key={i}>
-                  <a
-                    className={css({
-                      display: "block",
-                      paddingBlock: "2",
-                    })}
-                    href="/"
-                  >
-                    ナビゲーション{i}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </header>
+        <Header></Header>
       </div>
-      <main className={TripleColumn.main}>{children}</main>
+      <main
+        className={cx(
+          TripleColumn.main,
+          flex({
+            direction: "column",
+            gap: "4",
+          }),
+        )}
+      >
+        {children}
+      </main>
       <footer className={TripleColumn.aside}>
         <p>I&apos;m footer.</p>
         <small>&copy; 2023-present, Aumy</small>
