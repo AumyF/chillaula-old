@@ -8,44 +8,104 @@ datasource db {
   relationMode = "prisma"
 }
 
+/// ツイート的なやつ。文字数制限はとくにないと思う。それなりにリッチな表現をしたい
 model Resu {
-  id        Int             @id @default(autoincrement())
-  content   String
-  createdAt DateTime        @default(now())
-  scraps    ScrapsOnResus[]
-}
-
-model ScrapsOnResus {
-  resuId  Int
-  resu    Resu  @relation(fields: [resuId], references: [id])
-  scrapId Int
-  scrap   Scrap @relation(fields: [scrapId], references: [id])
-
-  @@id([scrapId, resuId])
-  @@index([resuId])
-  @@index([scrapId])
-}
-
-model Scrap {
-  id        Int             @id @default(autoincrement())
-  title     String
-  createdAt DateTime        @default(now())
-  resus     ScrapsOnResus[]
-}
-
-model Reference {
   id        Int      @id @default(autoincrement())
-  title     String
   createdAt DateTime @default(now())
-  url       String
+
+  /// Markdownかなんか
+  content String
+
+  /// 属するスレッド
+  collectionId Int?
+  collection   ResuCollection? @relation(fields: [collectionId], references: [id])
+
+  /// 既存レスを埋め込んで言及する感じ
+  quoteId  Int?
+  quote    Resu?   @relation("quote", fields: [quoteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  quotedBy Resu[] @relation("quote")
+
+  /// コレクションだけでなくレス自体もタグを貼れる
+  TagAttach TagAttach[]
+
+  @@index([quoteId])
+  @@index([collectionId])
 }
 
+/// Webページそのものを指す
+model Bookmark {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  /// 空文字列の場合は表示側でURLから自動生成する
+  title String
+
+  /// URLで参照できないものはいまのところスコープ外。URLが変わったときはそっちに張り替え直すことを想定している
+  url String @unique
+
+  collection   ResuCollection @relation(fields: [collectionId], references: [id])
+  collectionId Int            @unique
+
+  tags TagAttach[]
+}
+
+/// 素のスレッド
+model Thread {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  title String
+
+  collection   ResuCollection @relation(fields: [collectionId], references: [id])
+  collectionId Int            @unique
+  TagAttach    TagAttach[]
+}
+
+/// 複数のResuが*時系列順で*並んだもの
+model ResuCollection {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  /// 属するレス
+  Resu Resu[]
+
+  // ヘッド
+  Thread   Thread?
+  Bookmark Bookmark?
+}
+
+model TagAttach {
+  id Int @id @default(autoincrement())
+  tagId Int
+  tag   Tag @relation(fields: [tagId], references: [id])
+
+  bookmarkId Int?
+  threadId   Int?
+  resuId     Int?
+  bookmark   Bookmark? @relation(fields: [bookmarkId], references: [id])
+  thread     Thread?   @relation(fields: [threadId], references: [id])
+  resu       Resu?     @relation(fields: [resuId], references: [id])
+
+  @@unique([tagId, threadId, bookmarkId, resuId])
+  @@index([bookmarkId])
+  @@index([threadId])
+  @@index([resuId])
+}
+
+/// tech/web/frontend/react みたいな感じで階層分けされて表現されるタグ
 model Tag {
-  id       Int    @id @default(autoincrement())
-  name     String
+  id Int @id @default(autoincrement())
+
+  /// フルネームの一番最後のセクション、`tech/web/frontend/react` なら `react`
+  name String
+
+  /// ひとつ上の階層
+  /// tech/webならtech、techならnull
   parentId Int?
-  parent   Tag?   @relation("tag", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  Tag      Tag[] @relation("tag")
+  parent   Tag?  @relation("tag", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Children Tag[] @relation("tag")
+
+  TagAttach TagAttach[]
 
   @@unique([parentId, name])
 }

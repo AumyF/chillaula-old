@@ -17,10 +17,18 @@ const newURL = (string: string): URL | undefined => {
 async function CreatePage(url: string) {
   "use server";
 
-  await db
-    .insertInto("Reference")
-    .values({ url, title: url })
-    .executeTakeFirstOrThrow();
+  const bookmark = await db.transaction().execute(async (db) => {
+    const collection = await db
+      .insertInto("ResuCollection")
+      .values({})
+      .returning("id")
+      .executeTakeFirstOrThrow();
+    return await db
+      .insertInto("Bookmark")
+      .values({ url, title: "", collectionId: collection.id })
+      .returning(["id"])
+      .executeTakeFirstOrThrow();
+  });
   revalidatePath(`/references/by-url/${encodeURIComponent(url)}`);
 }
 
@@ -64,7 +72,7 @@ export default async function BookmarkByUrl({
   if (url === undefined) notFound();
 
   const scrap = await db
-    .selectFrom("Reference")
+    .selectFrom("Bookmark")
     .select(["id", "title"])
     .where("url", "=", url.toString())
     .executeTakeFirst();

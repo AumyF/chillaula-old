@@ -7,7 +7,7 @@ export const runtime = "edge";
 const Scrap = ({ id, title }: { id: number; title: string }) => {
   return (
     <li key={id}>
-      <Link href={`/scraps/by-id/${id}`}>{title}</Link>
+      <Link href={`/threads/by-id/${id}`}>{title}</Link>
     </li>
   );
 };
@@ -24,17 +24,7 @@ const List = <T,>(props: {
 };
 
 export default async function ScrapList() {
-  const scraps = await db.selectFrom("Scrap").select(["id", "title"]).execute();
-
-  const list = (
-    <ul>
-      {scraps.map((scrap) => (
-        <li key={scrap.id}>
-          <Link href={`/scraps/by-id/${scrap.id}`}>{scrap.title}</Link>
-        </li>
-      ))}
-    </ul>
-  );
+  const threads = await db.selectFrom("Thread").select(["id", "title"]).execute();
 
   return (
     <>
@@ -45,7 +35,7 @@ export default async function ScrapList() {
         })}
       >
         <List
-          list={scraps}
+          list={threads}
           fallback={() => <div>まだスクラップがありません</div>}
         >
           {(scrap) => <Scrap {...scrap} />}

@@ -36,13 +36,24 @@ export default async function StandardLayout({
             >
               <li>
                 <Link
-                  href="/scraps"
+                  href="/threads"
                   className={css({
                     display: "block",
                     paddingBlock: "2",
                   })}
                 >
-                  スクラップ
+                  スレッド
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/bookmarks"
+                  className={css({
+                    display: "block",
+                    paddingBlock: "2",
+                  })}
+                >
+                  ブックマーク
                 </Link>
               </li>
               {new Array(4).fill(undefined).map((_, i) => (

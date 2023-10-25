@@ -39,19 +39,7 @@ export const ResuComposer: React.FC<Props> = ({ createResu }) => {
           })}
         />
       </label>
-      <Button
-        type="submit"
-        className={css({
-          bg: "teal.300",
-          rounded: "lg",
-          paddingInline: "4",
-          paddingBlock: "1",
-          flex: "initial",
-          alignSelf: "end",
-        })}
-      >
-        Resu!
-      </Button>
+      <Button type="submit">Resu!</Button>
     </form>
   );
 };
