@@ -1,3 +1,4 @@
+import { List } from "@/_components/list";
 import { db } from "@/_db/kysely";
 import Link from "next/link";
 
@@ -10,16 +11,21 @@ export default async function BookmarkList() {
   return (
     <>
       <ul>
-        {bookmarks.map((bookmark) => (
-          <li key={bookmark.id}>
-            <h2>
-              <Link href={`/bookmarks/by-id/${bookmark.id}`}>
-                {bookmark.title || bookmark.url}
-              </Link>
-            </h2>
-            <time>{bookmark.createdAt.toISOString()}</time>
-          </li>
-        ))}
+        <List
+          fallback={() => <div>まだブックマークがありません</div>}
+          list={bookmarks}
+        >
+          {(bookmark) => (
+            <li key={bookmark.id}>
+              <h2>
+                <Link href={`/bookmarks/by-id/${bookmark.id}`}>
+                  {bookmark.title || bookmark.url}
+                </Link>
+              </h2>
+              <time>{bookmark.createdAt.toISOString()}</time>
+            </li>
+          )}
+        </List>
       </ul>
     </>
   );

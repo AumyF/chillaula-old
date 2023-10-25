@@ -3,6 +3,9 @@ import { db } from "@/_db/kysely";
 import { css } from "@/_styled-system/css";
 import { revalidatePath } from "next/cache";
 import { Suspense } from "react";
+import { List } from "@/_components/list";
+import { ResuView } from "@/_components/resu-view";
+import { sql } from "kysely";
 
 export const runtime = "edge";
 
@@ -21,12 +24,11 @@ async function CreatePage(url: string) {
     const collection = await db
       .insertInto("ResuCollection")
       .values({})
-      .returning("id")
       .executeTakeFirstOrThrow();
+    if (collection.insertId === undefined ) throw new Error("what");
     return await db
       .insertInto("Bookmark")
-      .values({ url, title: "", collectionId: collection.id })
-      .returning(["id"])
+      .values({ url, title: "", collectionId: Number(collection.insertId) })
       .executeTakeFirstOrThrow();
   });
   revalidatePath(`/references/by-url/${encodeURIComponent(url)}`);
@@ -71,16 +73,21 @@ export default async function BookmarkByUrl({
   const url = newURL(decodeURIComponent(params.url));
   if (url === undefined) notFound();
 
-  const scrap = await db
+  const bookmark = await db
     .selectFrom("Bookmark")
-    .select(["id", "title"])
+    .select(["id", "title", "collectionId"])
     .where("url", "=", url.toString())
     .executeTakeFirst();
 
-  if (scrap === undefined) {
+  if (bookmark === undefined) {
     return await NotFound(url.toString());
   }
 
+  const resus = await db
+    .selectFrom("Resu")
+    .select(["id", "createdAt", "content", "quoteId"])
+    .where("Resu.collectionId", "=", bookmark.collectionId)
+    .execute();
   return (
     <>
       <hgroup>
@@ -90,13 +97,15 @@ export default async function BookmarkByUrl({
             fontWeight: "bold",
           })}
         >
-          {scrap.title}
+          {bookmark.title}
         </h1>
-        <p>ID: {scrap.id}</p>
+        <p>ID: {bookmark.id}</p>
       </hgroup>
-      <Suspense fallback={<p>loading...</p>}>
-        <FancyExternalLink url={url} />
-      </Suspense>
+      <ul>
+        <List list={resus} fallback={() => <div>まだレスがありません</div>}>
+          {(resu) => <ResuView {...resu}></ResuView>}
+        </List>
+      </ul>
     </>
   );
 }
