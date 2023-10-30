@@ -35,7 +35,7 @@ export default async function BookmarkList() {
                   paddingBlock: "1",
                 })}
               >
-                <Link href={`/bookmarks/by-id/${bookmark.id}`}>
+                <Link href={`/bookmarks/id/${bookmark.id}`}>
                   {bookmark.title || bookmark.url}
                 </Link>
               </h2>
