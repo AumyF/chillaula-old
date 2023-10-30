@@ -14,7 +14,10 @@ const Scrap = ({ id, title }: { id: number; title: string }) => {
 };
 
 export default async function ScrapList() {
-  const threads = await db.selectFrom("Thread").select(["id", "title"]).execute();
+  const threads = await db
+    .selectFrom("Thread")
+    .select(["id", "title"])
+    .execute();
 
   return (
     <>
