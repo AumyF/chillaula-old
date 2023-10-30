@@ -16,7 +16,13 @@ export default defineConfig({
       semanticTokens: {
         colors: {
           bg: {
-            value: { base: "{colors.gray.100}", _osDark: "{colors.gray.900}" },
+            value: { base: "{colors.gray.50}", _osDark: "{colors.gray.900}" },
+          },
+          bgWeak: {
+            value: { base: "{colors.white}", _osDark: "{colors.gray.800}" },
+          },
+          border: {
+            value: { base: "{colors.gray.300}", _osDark: "{colors.gray.600}" },
           },
           text: {
             value: { base: "{colors.gray.900}", _osDark: "{colors.gray.100}" },

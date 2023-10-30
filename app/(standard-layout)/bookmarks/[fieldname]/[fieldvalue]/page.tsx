@@ -1,9 +1,8 @@
 import { notFound } from "next/navigation";
 import { css } from "@/_styled-system/css";
-import { ResuView } from "@/_components/resu-view";
-import { List } from "@/_components/list";
 import { db } from "@/_db/kysely";
 import { revalidatePath } from "next/cache";
+import { ResuList } from "@/_components/resu-list";
 
 export const runtime = "edge";
 
@@ -130,11 +129,7 @@ export default async function BookmarkPage({
         </h1>
         <p>ID: {bookmark.id}</p>
       </hgroup>
-      <ul>
-        <List list={resus} fallback={() => <div>まだレスがありません</div>}>
-          {(resu) => <ResuView {...resu}></ResuView>}
-        </List>
-      </ul>
+      <ResuList resus={resus} />
     </>
   );
 }
