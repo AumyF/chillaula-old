@@ -8,10 +8,25 @@ datasource db {
   relationMode = "prisma"
 }
 
+/// あんまユーザーの概念を追加したかったわけではないんだがな
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  name String
+
+  resus     Resu[]
+  bookmarks Bookmark[]
+  threads   Thread[]
+}
+
 /// ツイート的なやつ。文字数制限はとくにないと思う。それなりにリッチな表現をしたい
 model Resu {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
+
+  authorId Int
+  author   User @relation(fields: [authorId], references: [id])
 
   /// Markdownかなんか
   content String
@@ -22,12 +37,13 @@ model Resu {
 
   /// 既存レスを埋め込んで言及する感じ
   quoteId  Int?
-  quote    Resu?   @relation("quote", fields: [quoteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  quote    Resu?  @relation("quote", fields: [quoteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   quotedBy Resu[] @relation("quote")
 
   /// コレクションだけでなくレス自体もタグを貼れる
   TagAttach TagAttach[]
 
+  @@index([authorId])
   @@index([quoteId])
   @@index([collectionId])
 }
@@ -36,6 +52,9 @@ model Resu {
 model Bookmark {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
+
+  authorId Int
+  author   User @relation(fields: [authorId], references: [id])
 
   /// 空文字列の場合は表示側でURLから自動生成する
   title String
@@ -47,6 +66,8 @@ model Bookmark {
   collectionId Int            @unique
 
   tags TagAttach[]
+
+  @@index([authorId])
 }
 
 /// 素のスレッド
@@ -54,11 +75,16 @@ model Thread {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
+  authorId Int
+  author   User @relation(fields: [authorId], references: [id])
+
   title String
 
   collection   ResuCollection @relation(fields: [collectionId], references: [id])
   collectionId Int            @unique
   TagAttach    TagAttach[]
+
+  @@index([authorId])
 }
 
 /// 複数のResuが*時系列順で*並んだもの
@@ -75,7 +101,7 @@ model ResuCollection {
 }
 
 model TagAttach {
-  id Int @id @default(autoincrement())
+  id    Int @id @default(autoincrement())
   tagId Int
   tag   Tag @relation(fields: [tagId], references: [id])
 
