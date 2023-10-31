@@ -4,6 +4,7 @@ import { db } from "@/_db/kysely";
 import { css } from "@/_styled-system/css";
 import { flex } from "@/_styled-system/patterns";
 import Link from "next/link";
+import * as Bookmark from "./_utils";
 
 export default async function BookmarkList() {
   const bookmarks = await db
@@ -36,7 +37,7 @@ export default async function BookmarkList() {
                 })}
               >
                 <Link href={`/bookmarks/id/${bookmark.id}`}>
-                  {bookmark.title || bookmark.url}
+                  {Bookmark.title(bookmark)}
                 </Link>
               </h2>
               <time>{bookmark.createdAt.toISOString()}</time>

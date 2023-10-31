@@ -3,6 +3,7 @@ import { css } from "@/_styled-system/css";
 import { db } from "@/_db/kysely";
 import { revalidatePath } from "next/cache";
 import { ResuList } from "@/_components/resu-list";
+import * as Bookmark from "../../_utils";
 
 export const runtime = "edge";
 
@@ -53,10 +54,12 @@ async function queryResus(id: number) {
     .execute();
 }
 
+const fields = ["id", "title", "url", "collectionId"] as const;
+
 async function queryBookmarkByUrl(url: string) {
   const bookmark = await db
     .selectFrom("Bookmark")
-    .select(["id", "title", "collectionId"])
+    .select(fields)
     .where("url", "=", url)
     .executeTakeFirst();
 
@@ -70,7 +73,7 @@ async function queryBookmarkByUrl(url: string) {
 async function queryBookmarkById(id: number) {
   const bookmark = await db
     .selectFrom("Bookmark")
-    .select(["id", "title", "collectionId"])
+    .select(fields)
     .where("id", "=", id)
     .executeTakeFirst();
 
@@ -125,7 +128,7 @@ export default async function BookmarkPage({
             fontWeight: "bold",
           })}
         >
-          {bookmark.title}
+          {Bookmark.title(bookmark)}
         </h1>
         <p>ID: {bookmark.id}</p>
       </hgroup>
