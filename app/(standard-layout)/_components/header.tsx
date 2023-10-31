@@ -1,7 +1,26 @@
+"use client";
+
 import { css } from "@/_styled-system/css";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const link = css({
+  display: "block",
+  paddingBlock: "2",
+  paddingInlineStart: "2",
+  rounded: "md",
+  transition: "50ms background-color ease-in-out",
+  "&:hover": {
+    bg: "bgHover",
+  },
+  "&[data-currentpage=true]": {
+    fontWeight: "bold",
+  },
+});
 
 export const Header: React.FC = () => {
+  const pathname = usePathname();
+
   return (
     <header className={css({ marginInlineStart: "auto" })}>
       <h1
@@ -28,12 +47,15 @@ export const Header: React.FC = () => {
           })}
         >
           <li>
+            <Link href="/" data-currentpage={pathname === "/"} className={link}>
+              ホーム
+            </Link>
+          </li>
+          <li>
             <Link
               href="/threads"
-              className={css({
-                display: "block",
-                paddingBlock: "2",
-              })}
+              data-currentpage={pathname === "/threads"}
+              className={link}
             >
               スレッド
             </Link>
@@ -41,27 +63,12 @@ export const Header: React.FC = () => {
           <li>
             <Link
               href="/bookmarks"
-              className={css({
-                display: "block",
-                paddingBlock: "2",
-              })}
+              data-currentpage={pathname === "/bookmarks"}
+              className={link}
             >
               ブックマーク
             </Link>
           </li>
-          {new Array(4).fill(undefined).map((_, i) => (
-            <li key={i}>
-              <a
-                className={css({
-                  display: "block",
-                  paddingBlock: "2",
-                })}
-                href="/"
-              >
-                ナビゲーション{i}
-              </a>
-            </li>
-          ))}
         </ul>
       </nav>
     </header>

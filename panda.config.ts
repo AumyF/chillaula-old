@@ -18,6 +18,9 @@ export default defineConfig({
           bg: {
             value: { base: "{colors.gray.50}", _osDark: "{colors.gray.900}" },
           },
+          bgHover: {
+            value: { base: "{colors.gray.100}", _osDark: "{colors.gray.800}" },
+          },
           bgWeak: {
             value: { base: "{colors.white}", _osDark: "{colors.gray.800}" },
           },
