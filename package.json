@@ -26,6 +26,7 @@
     "eslint-config-next": "^14.0.1",
     "kysely": "^0.26.3",
     "kysely-planetscale": "^1.4.0",
+    "linkedom": "^0.16.5",
     "next": "^14.0.1",
     "prisma": "^5.4.2",
     "prisma-kysely": "^1.7.1",

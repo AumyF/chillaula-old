@@ -6,6 +6,7 @@ type Resu = Readonly<{
   id: number;
   content: React.ReactNode;
   createdAt: Date;
+  authorName: string;
 }>;
 
 export const ResuList: React.FC<{
@@ -34,7 +35,8 @@ export const ResuList: React.FC<{
               borderWidth: "thin",
             })}
           >
-            <h2>{content}</h2>
+            <div></div>
+            <div>{content}</div>
             <time>{createdAt.toISOString()}</time>
           </li>
         )}

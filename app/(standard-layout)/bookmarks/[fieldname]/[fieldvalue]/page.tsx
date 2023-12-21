@@ -4,6 +4,9 @@ import { db } from "@/_db/kysely";
 import { revalidatePath } from "next/cache";
 import { ResuList } from "@/_components/resu-list";
 import * as Bookmark from "../../_utils";
+import { ResuComposer } from "@/_components/resu-composer";
+import { parseHTML } from "linkedom/worker";
+import { SubmitFetchedTitle } from "./SubmitFetchedTitle";
 
 export const runtime = "edge";
 
@@ -18,7 +21,12 @@ async function createBookmarkOnUrl(url: string) {
     if (collection.insertId === undefined) throw new Error("what");
     return await db
       .insertInto("Bookmark")
-      .values({ url, title: "", collectionId: Number(collection.insertId) })
+      .values({
+        url,
+        title: "",
+        collectionId: Number(collection.insertId),
+        authorId: 1,
+      })
       .executeTakeFirstOrThrow();
   });
   revalidatePath(`/bookmarks/url/${encodeURIComponent(url)}`);
@@ -49,16 +57,30 @@ async function UrlNotFound(url: string) {
 async function queryResus(id: number) {
   return await db
     .selectFrom("Resu")
-    .select(["id", "createdAt", "content", "quoteId"])
+    .innerJoin("User", "User.id", "authorId")
+    .select([
+      "Resu.id",
+      "Resu.createdAt",
+      "content",
+      "quoteId",
+      "User.name as authorName",
+    ])
     .where("Resu.collectionId", "=", id)
     .execute();
 }
 
-const fields = ["id", "title", "url", "collectionId"] as const;
+const fields = [
+  "Bookmark.id",
+  "title",
+  "url",
+  "collectionId",
+  "User.name as authorName",
+] as const;
 
 async function queryBookmarkByUrl(url: string) {
   const bookmark = await db
     .selectFrom("Bookmark")
+    .innerJoin("User", "Bookmark.authorId", "User.id")
     .select(fields)
     .where("url", "=", url)
     .executeTakeFirst();
@@ -73,8 +95,9 @@ async function queryBookmarkByUrl(url: string) {
 async function queryBookmarkById(id: number) {
   const bookmark = await db
     .selectFrom("Bookmark")
+    .innerJoin("User", "Bookmark.authorId", "User.id")
     .select(fields)
-    .where("id", "=", id)
+    .where("Bookmark.id", "=", id)
     .executeTakeFirst();
 
   if (bookmark === undefined) {
@@ -103,6 +126,7 @@ export default async function BookmarkPage({
     case "id": {
       const id = Number.parseInt(params.fieldvalue);
       if (Number.isNaN(id)) {
+        console.error(`bookmark invalid id ${id}`);
         notFound();
       }
       result = await queryBookmarkById(id);
@@ -115,10 +139,38 @@ export default async function BookmarkPage({
   }
 
   if (result === undefined) {
+    console.error(
+      `bookmark notfound  ${params.fieldname}: ${params.fieldvalue}`,
+    );
     notFound();
+  }
+  async function createResuOnBookmark(formData: FormData) {
+    "use server";
+    const collection = await db
+      .insertInto("ResuCollection")
+      .values({})
+      .executeTakeFirstOrThrow();
+    const a = await db
+      .insertInto("Resu")
+      .values({
+        authorId: 1,
+        content: formData.get("content")!.toString(),
+        collectionId: Number(collection.insertId),
+      })
+      .executeTakeFirstOrThrow();
+
+    revalidatePath(`/bookmarks/${params.fieldname}/${params.fieldvalue}`);
   }
 
   const { bookmark, resus } = result;
+
+  const fetchedTitle = bookmark.title
+    ? undefined
+    : await fetch(bookmark.url).then(async (response) => {
+      const text = await response.text();
+      const html = parseHTML(text);
+      return html.document.querySelector("title")?.innerText;
+    });
   return (
     <>
       <hgroup>
@@ -132,6 +184,8 @@ export default async function BookmarkPage({
         </h1>
         <p>ID: {bookmark.id}</p>
       </hgroup>
+      {fetchedTitle&&<SubmitFetchedTitle fetchedTitle={fetchedTitle ?? ""} id={bookmark.id} />}
+      <ResuComposer createResu={createResuOnBookmark}></ResuComposer>
       <ResuList resus={resus} />
     </>
   );
