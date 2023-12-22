@@ -1,24 +1,27 @@
 import { revalidatePath } from "next/cache";
-import { db } from "@/_db/kysely";
 import { ResuComposer } from "@/_components/resu-composer";
 import { ResuList } from "@/_components/resu-list";
+import { supabase } from "@/_db/supabase";
 
 export const runtime = "edge";
 
 export default async function Home() {
-  const resus = await db
-    .selectFrom("Resu")
-    .select(["content", "createdAt", "id"])
-    .orderBy("createdAt desc")
-    .execute();
+  const result = await supabase
+    .from("Resu")
+    .select("content, createdAt, id, author:User (id, name)")
+    .order("createdAt");
 
-  async function createResu(formData: FormData) {
+  
+
+  async function createResu(content: string) {
     "use server";
+    const uid = (await supabase.auth.getUser()).data.user?.id;
 
-    await db
-      .insertInto("Resu")
-      .values({ content: formData.get("content")!.toString() })
-      .execute();
+    if (uid == null) throw new Error("not logged in");
+
+    await supabase
+      .from("Resu")
+      .insert({ content, authorId: uid });
 
     revalidatePath("/");
   }
@@ -26,7 +29,7 @@ export default async function Home() {
   return (
     <>
       <ResuComposer createResu={createResu} />
-      <ResuList resus={resus} />
+      <ResuList resus={result.data ?? []} />
     </>
   );
 }

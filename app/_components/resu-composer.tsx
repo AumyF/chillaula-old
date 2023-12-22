@@ -2,12 +2,15 @@ import { css } from "@/_styled-system/css";
 import { flex } from "@/_styled-system/patterns";
 import { Button } from "./button";
 
-type Props = { createResu: (formData: FormData) => void };
+type Props = { createResu: (content: string) => void };
 
 export const ResuComposer: React.FC<Props> = ({ createResu }) => {
   return (
     <form
-      action={createResu}
+      action={async (fd) => {
+        "use server";
+        createResu(fd.get("content")?.toString() ?? "");
+      }}
       className={flex({
         direction: "column",
         gap: "2",

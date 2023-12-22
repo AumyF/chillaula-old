@@ -5,8 +5,11 @@ import { flex } from "@/_styled-system/patterns";
 type Resu = Readonly<{
   id: number;
   content: React.ReactNode;
-  createdAt: Date;
-  authorName: string;
+  createdAt: string;
+  author: {
+    name: string;
+    id : string;
+  } | null;
 }>;
 
 export const ResuList: React.FC<{
@@ -37,7 +40,7 @@ export const ResuList: React.FC<{
           >
             <div></div>
             <div>{content}</div>
-            <time>{createdAt.toISOString()}</time>
+            <time>{createdAt}</time>
           </li>
         )}
       </List>

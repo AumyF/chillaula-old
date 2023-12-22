@@ -1,5 +1,5 @@
 import { List } from "@/_components/list";
-import { db } from "@/_db/kysely";
+import { supabase } from "@/_db/supabase";
 import { flex } from "@/_styled-system/patterns";
 import Link from "next/link";
 
@@ -14,10 +14,12 @@ const Scrap = ({ id, title }: { id: number; title: string }) => {
 };
 
 export default async function ScrapList() {
-  const threads = await db
-    .selectFrom("Thread")
-    .select(["id", "title"])
-    .execute();
+  const result = await supabase.from("Thread").select("id, title");
+  if (result.error) {
+    console.log(result);
+    throw new Error("fetching error");
+  }
+  const threads = result.data;
 
   return (
     <>
